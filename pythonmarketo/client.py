@@ -194,4 +194,15 @@ class MarketoClient:
         data = HttpLib().post("https://" + self.host + "/rest/v1/leads.json" , args, data)
         if not data['success'] : raise MarketoException(data['errors'][0])
         return data['result'][0]['status']
-        
+
+    def describe(self):
+        self.authenticate()
+        args = {
+            'access_token': self.token,
+        }
+        data = HttpLib().get("https://" + self.host + "/rest/v1/leads/describe.json", args)
+        if data is None:
+            raise Exception("Empty Response")
+        if not data['success']:
+            raise MarketoException(data['errors'][0])
+        return data
