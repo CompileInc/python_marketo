@@ -35,10 +35,15 @@ class MarketoClient:
         '''
         for i in range(0,10):
             try:
-                method_map={'get_leads':self.get_leads, 'get_leads_by_listId':self.get_leads_by_listId,
-                            'get_activity_types':self.get_activity_types, 'get_lead_activity':self.get_lead_activity,
-                            'get_paging_token':self.get_paging_token, 'update_lead':self.update_lead, 
-                            'create_lead':self.create_lead, 'get_lead_activity_page':self.get_lead_activity_page}
+                method_map={'get_leads':self.get_leads,
+                            'get_leads_by_listId':self.get_leads_by_listId,
+                            'get_activity_types':self.get_activity_types,
+                            'get_lead_activity':self.get_lead_activity,
+                            'get_paging_token':self.get_paging_token,
+                            'update_lead':self.update_lead, 
+                            'create_lead':self.create_lead,
+                            'get_lead_activity_page':self.get_lead_activity_page,
+                            'describe':self.describe}
 
                 result = method_map[method](*args,**kargs) 
                 self.API_CALLS_MADE += 1
