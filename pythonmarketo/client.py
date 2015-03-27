@@ -43,7 +43,8 @@ class MarketoClient:
                             'update_lead':self.update_lead, 
                             'create_lead':self.create_lead,
                             'get_lead_activity_page':self.get_lead_activity_page,
-                            'describe':self.describe}
+                            'describe':self.describe,
+                            'get_lists':self.get_lists}
 
                 result = method_map[method](*args,**kargs) 
                 self.API_CALLS_MADE += 1
@@ -210,4 +211,36 @@ class MarketoClient:
             raise Exception("Empty Response")
         if not data['success']:
             raise MarketoException(data['errors'][0])
-        return data
+        return data['result']
+
+    def get_lists(self, batchSize=None):
+        self.authenticate()
+        args = {
+            'access_token': self.token,
+        }
+        data = HttpLib().get("https://" + self.host + "/rest/v1/lists.json", args)
+        if data is None:
+            raise Exception("Empty Response")
+        if not data['success']:
+            raise MarketoException(data['errors'][0])
+        return data['result']
+
+        self.authenticate()
+        args = {
+            'access_token': self.token
+        }
+        if batchSize:
+            args['batchSize'] = batchSize
+        result_list = []
+        while True:
+            data = HttpLib().get("https://" + self.host + "/rest/v1/lists.json", args)
+            if data is None:
+                raise Exception("Empty Response")
+            self.last_request_id = data['requestId']
+            if not data['success']:
+                raise MarketoException(data['errors'][0])
+            result_list.extend(data['result'])
+            if len(data['result']) == 0 or 'nextPageToken' not in data:
+                break
+            args['nextPageToken'] = data['nextPageToken']
+        return result_list
