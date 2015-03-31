@@ -44,7 +44,8 @@ class MarketoClient:
                             'create_lead':self.create_lead,
                             'get_lead_activity_page':self.get_lead_activity_page,
                             'describe':self.describe,
-                            'get_lists':self.get_lists}
+                            'get_lists':self.get_lists,
+                            'create_or_update_leads': self.create_or_update_leads}
 
                 result = method_map[method](*args,**kargs) 
                 self.API_CALLS_MADE += 1
@@ -191,7 +192,22 @@ class MarketoClient:
             ]
         }
         return self.post(data)
-           
+
+    def create_or_update_leads(self, lookupField, leads):
+        data = {
+            'action': 'createOrUpdate',
+            'lookupField': lookupField,
+            'input': leads
+        }
+        self.authenticate()
+        args = {
+            'access_token': self.token
+        }
+        data = HttpLib().post("https://" + self.host + "/rest/v1/leads.json" , args, data)
+        if not data['success']:
+            raise MarketoException(data['errors'][0])
+        return data['result']
+
     def post(self, data):
         self.authenticate()
         args = {
