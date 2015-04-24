@@ -45,7 +45,8 @@ class MarketoClient:
                             'get_lead_activity_page':self.get_lead_activity_page,
                             'describe':self.describe,
                             'get_lists':self.get_lists,
-                            'create_or_update_leads': self.create_or_update_leads}
+                            'create_or_update_leads': self.create_or_update_leads,
+                            'add_leads_to_list': self.add_leads_to_list}
 
                 result = method_map[method](*args,**kargs) 
                 self.API_CALLS_MADE += 1
@@ -232,17 +233,6 @@ class MarketoClient:
     def get_lists(self, batchSize=None):
         self.authenticate()
         args = {
-            'access_token': self.token,
-        }
-        data = HttpLib().get("https://" + self.host + "/rest/v1/lists.json", args)
-        if data is None:
-            raise Exception("Empty Response")
-        if not data['success']:
-            raise MarketoException(data['errors'][0])
-        return data['result']
-
-        self.authenticate()
-        args = {
             'access_token': self.token
         }
         if batchSize:
@@ -260,3 +250,12 @@ class MarketoClient:
                 break
             args['nextPageToken'] = data['nextPageToken']
         return result_list
+
+    def add_leads_to_list(self, list_id, lead_id_set):
+        self.authenticate()
+        args = {'access_token': self.token}
+        data = {'input': [{'id': lead_id} for lead_id in lead_id_set]}
+        r = HttpLib().post("https://" + self.host + "/rest/v1/lists/" + list_id + "/leads.json", args, data)
+        if not r['success']:
+            raise MarketoException(r['errors'][0])
+        return r['result']

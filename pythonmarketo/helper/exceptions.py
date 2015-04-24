@@ -7,4 +7,4 @@ class MarketoException(Exception):
         self.code = exc['code']
       
     def __str__(self):
-        return self.msg, self.code
+        return self.message, self.code
